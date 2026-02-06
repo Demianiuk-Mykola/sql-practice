@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-local
-=======
-branch
->>>>>>> b7005aad1e3b0b96033aebe46301d7a2a08e09a4
