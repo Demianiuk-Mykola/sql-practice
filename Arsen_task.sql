@@ -24,42 +24,56 @@ CREATE TABLE dbo.KeyDetails (
     KeyD VARCHAR (2) NOT NULL
 );
 
+Lbl_Ins:
+
 INSERT INTO dbo.KeyDetails(KeyVal, KeyD)
 VALUES
-('A', '1a'),
-('A', '2a'),
-('A', '3a'),
-('A', '4a'),
-('B', '1b'),
-('B', '2b'),
-('C', '1c'),
-('C', '2c'),
-('C', '3c'),
-('D', '1d'),
-('D', '2d'),
-('D', '3d'),
-('D', '4d'),
-('D', '5d'),
-('D', '6d');
+('A', 'aa'),
+('A', 'ss'),
+('A', 'zz'),
+('A', 'qq'),
+('B', 'dd'),
+('B', 'ff'),
+('C', 'gg'),
+('C', 'hh'),
+('C', 'jj'),
+('D', 'kk'),
+('D', 'll'),
+('D', 'mm'),
+('D', 'rr'),
+('D', 'rr'),
+('D', 'pp');
 
 --AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+SELECT * FROM dbo.Keys K
+SELECT KeyVal, DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal
+SELECT * from dbo.KeyDetails
 
-SELECT *
-  FROM dbo.Keys
+SELECT k.KeyVal, k.KeyCount, d.KeyD, iif( d.KeyD = c.DetailMin, k.KeyCount, 0), c.DetailMin
+  FROM dbo.Keys K
+  Join (SELECT KeyVal, DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal) C on k.KeyVal  = c.KeyVal
+  join dbo.KeyDetails D on k.KeyVal  = d.KeyVal 
+
+SELECT KeyVal, DetailCnt = count(1), min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal 
+
+
+SELECT k.KeyVal, k.KeyCount, d.KeyD,c.DetailCnt, iif( d.KeyD = c.DetailMin,  k.KeyCount/c.DetailCnt + k.KeyCount % c.DetailCnt, k.KeyCount/c.DetailCnt)
+     , fullInt = k.KeyCount/c.DetailCnt,  Remider = k.KeyCount % c.DetailCnt
+  FROM dbo.Keys K
+  Join (SELECT KeyVal, DetailCnt = count(1), DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal ) C on k.KeyVal  = c.KeyVal
+  join dbo.KeyDetails D on k.KeyVal  = d.KeyVal 
+
+
+
 SELECT *
   FROM dbo.KeyDetails
+
 --aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-SELECT KeyDetails.KeyVal, KeyDetails.KeyD, Keys.KeyCount
+SELECT KeyDetails.KeyVal, KeyDetails.KeyD, Keys.KeyCount 
   FROM dbo.Keys
  INNER JOIN dbo.KeyDetails ON Keys.KeyVal = KeyDetails.KeyVal
 
 --aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-SELECT KeyDetails.KeyVal, KeyDetails.KeyD, COUNT(Keys.KeyCount) 
-  FROM dbo.Keys
- INNER JOIN dbo.KeyDetails ON Keys.KeyVal = KeyDetails.KeyVal
- GROUP BY KeyDetails.KeyD, KeyDetails.KeyVal
-
 
 SELECT KeyDetails.KeyVal, COUNT(KeyDetails.KeyVal)
   FROM KeyDetails
