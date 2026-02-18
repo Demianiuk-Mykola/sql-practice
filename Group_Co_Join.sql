@@ -21,18 +21,29 @@ VALUES
 ('D', 'kk'), ('D', 'll'), ('D', 'mm'), ('D', 'rr'), ('D', 'rr'), ('D', 'pp');
 
 -------------------------------------------
+-- Retrieving all records in Keys table.
 SELECT * FROM dbo.Keys K
+SELECT * FROM dbo.KeyDetails D
+
+-- Creating a column where Null values in KeyD column are replaced with "Null" word
 SELECT KeyVal, KeyD, isnull(KeyD, '**Null**')  from dbo.KeyDetails order by KeyVal, KeyD
+
+-- Shows how 'count' behaves when Null values are present (count(1) includes all values, count(KeyD) includes only NON-Null values)
 SELECT KeyVal, count (KeyD), count (1), DetailMin = min(KeyD) /*, DetailAvg = Avg(KeyD)*/, DetailMax = max(KeyD)FROM dbo.KeyDetails GROUP BY KeyVal
+
+-- Here we retrieve count of distinct values in column KeyD, 
 SELECT count (KeyD), count (distinct KeyD), count (distinct isnull(KeyD, '**Null**')), count (1), DetailMin = min(KeyD) /*, DetailAvg = Avg(KeyD)*/, DetailMax = max(KeyD) FROM dbo.KeyDetails 
 
-    -- 1.
+    -- 1. iif(this = this,put this value,othervise this)
+    -- Retrieves combination of 2 tables and one calculated retrieval (SELECT). We find minimal value KeyD for each Group and use it to assign correct KeyCount (Actual value or 0)
 SELECT k.KeyVal, k.KeyCount, d.KeyD, iif( d.KeyD = c.Detail_1st, k.KeyCount, 0), '|||' = '|||', c.Detail_1st
   FROM dbo.Keys K
   Join (SELECT KeyVal, Detail_1st = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal) C on k.KeyVal  = c.KeyVal
   join dbo.KeyDetails D on k.KeyVal  = d.KeyVal 
 
-    -- 2.
+    -- 2. We need to evenly spread total value of KeyCount between all KeyDetails. Example: 5 key details and 30 KeyCount -> 30 /5 = 6 KeyCount per KeyDetail
+    -- Select statement retrieves combination of 2 tables and one calculated retrieval (SELECT). We find minimaal value KeyD for each group and assign to it
+    -- result of division KeyCount by count of values in each group of KeyVals + the reminder of division (if any). Otherwise assign to it only the result of division.
 SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt, AprDistribution = iif( d.KeyD = c.DetailMin,  k.KeyCount/c.DetailCnt + k.KeyCount % c.DetailCnt, k.KeyCount/c.DetailCnt)
      , '|||' = '|||', wholeInt = k.KeyCount/c.DetailCnt,  Remider = k.KeyCount % c.DetailCnt
   FROM dbo.Keys K
