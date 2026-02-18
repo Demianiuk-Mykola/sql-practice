@@ -51,13 +51,14 @@ SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt, AprDistribution = iif( d.KeyD 
   Join (SELECT KeyVal, DetailCnt = count(1), DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal) C on k.KeyVal  = c.KeyVal
   join dbo.KeyDetails D on k.KeyVal  = d.KeyVal 
 
-  -- Testing AREA------------------------------------------------------------------------------
-  
 
-  -- This interpreatiton adds column which sorts and enumerates records according to the group based on KeyVal field.
+
+  -- 3. This interpreatiton adds column which sorts and enumerates records according to the group based on KeyVal field.
   -- THis allows to specify precisely which record should be chosen for manipulation (in our case adding reminder to AprDistribution).
   -- !!! It will work even with records that are duplicated, because it is not based on aggregate function min(), max(), avg()...
-  SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt, Gr_RowNumber = ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal), AprDistribution =  iif( (ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal) = 1),  k.KeyCount/c.DetailCnt + k.KeyCount % c.DetailCnt, k.KeyCount/c.DetailCnt)
+  SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt 
+     ,   Gr_RowNumber = ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal)
+     ,   AprDistribution =  iif( (ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal) = 1),  k.KeyCount/c.DetailCnt + k.KeyCount % c.DetailCnt, k.KeyCount/c.DetailCnt)
      , '|||' = '|||', wholeInt = k.KeyCount/c.DetailCnt,  Remider = k.KeyCount % c.DetailCnt
   FROM dbo.Keys K
   Join (SELECT KeyVal, DetailCnt = count(1), DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal) C on k.KeyVal  = c.KeyVal
