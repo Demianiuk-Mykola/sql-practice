@@ -94,13 +94,24 @@ SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt, AprDistribution = iif( d.KeyD 
      , '|||' = '|||', wholeInt = k.KeyCount/c.DetailCnt,  Remider = k.KeyCount % c.DetailCnt
   FROM dbo.Keys K
   Join (SELECT KeyVal, DetailCnt = count(1), DetailMin = min(KeyD) FROM dbo.KeyDetails GROUP BY KeyVal) C on k.KeyVal  = c.KeyVal
-  join dbo.KeyDetails D on k.KeyVal  = d.KeyVal 
+  join dbo.KeyDetails D on k.KeyVal  = d.KeyVal
+ ORDER BY k.KeyVal, d.KeyD
 
 
-
+-- 8. Task #3: Create query to evenly spread total value of KeyCount between all KeyDetails regardless of duplicates
+-- Adding duplicates (we have to add 3 records bacuse 30 is divided without reminder by 5 and by 6)
+INSERT INTO dbo.KeyDetails SELECT 'A', 'aa'
+INSERT INTO dbo.KeyDetails SELECT 'A', 'aa'
+INSERT INTO dbo.KeyDetails SELECT 'A', 'aa'
+--    Idea: Example: If you run query above all 'aa' for 'A' adding reminder to each record.
+--     How: Create unique identifier for each record using GUID (globally unique identifier)
+SELECT NEWID ()
+SELECT KeyVal, KeyD, NEWID() FROM dbo.KeyDetails ORDER BY KeyVal, KeyD
   -- 3. This interpreatiton adds column which sorts and enumerates records according to the group based on KeyVal field.
   -- THis allows to specify precisely which record should be chosen for manipulation (in our case adding reminder to AprDistribution).
   -- !!! It will work even with records that are duplicated, because it is not based on aggregate function min(), max(), avg()...
+ 
+  
   SELECT k.KeyVal, k.KeyCount, d.KeyD, c.DetailCnt 
      ,   Gr_RowNumber = ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal)
      ,   AprDistribution =  iif( (ROW_NUMBER() OVER (PARTITION BY k.KeyVal ORDER BY k.KeyVal) = 1)
