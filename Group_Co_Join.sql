@@ -128,7 +128,7 @@ SELECT * FROM #Calc
     --     2nd part: adding logic to query for wholeInt = 0
 SELECT d.KeyVal, c.KeyCount
      , Distr = case when wholeInt != 0 then iif(d.DetailID = 1, c.wholeInt + c.Remider, c.wholeInt)
-                     else 9999 end
+                     else iif(d.DetailID <= c.Remider,1,0 ) end
     -- , '|||'='|||', d.*, '|||'='|||', c.* -- for debugging and understanding purposes
   FROM #Details D
   JOIN #Calc C ON d.KeyVal = c.KeyVal
