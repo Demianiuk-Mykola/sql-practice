@@ -70,3 +70,4 @@ INSERT INTO dbo.HighEarners (EmployeeID, FirstName, Salary)
         Salary 
     FROM dbo.Employees
     WHERE Salary > 90000
+    --some comment
