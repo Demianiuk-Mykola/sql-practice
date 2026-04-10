@@ -121,7 +121,7 @@ SELECT d.KeyVal, DetailCnt = count(1), k.KeyCount, wholeInt = k.KeyCount/count(1
   JOIN dbo.Keys K ON d.KeyVal = k.KeyVal
  GROUP BY d.KeyVal, k.KeyCount 
 
-SELECT * FROM #Calc
+SELECT * FROM #Calc   -- SELECT * FROM KeyDetails ORDER BY KeyVal
 
     -- 11. Building final report (query) easy to read and understand
     --     1st part: we build query for wholeInt > 0
@@ -132,3 +132,103 @@ SELECT d.KeyVal, c.KeyCount
     -- , '|||'='|||', d.*, '|||'='|||', c.* -- for debugging and understanding purposes
   FROM #Details D
   JOIN #Calc C ON d.KeyVal = c.KeyVal
+--######################################################### - If records have no representation in both tables
+USE MyDatabase
+
+SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
+-- SELECT * FROM #TempKeys
+SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
+
+
+SELECT *
+INTO #TempKeys   
+FROM dbo.Keys
+
+INSERT INTO #TempKeys SELECT 'E',21;
+INSERT INTO #TempKeys SELECT 'F',24;
+
+SELECT *
+INTO #TempKeyD   
+FROM dbo.KeyDetails
+
+INSERT INTO #TempKeyD SELECT 'L','l1';
+INSERT INTO #TempKeyD SELECT 'L','l2';
+INSERT INTO #TempKeyD SELECT 'L','l3';
+INSERT INTO #TempKeyD SELECT 'M','m1';
+INSERT INTO #TempKeyD SELECT 'M','m2';
+INSERT INTO #TempKeyD SELECT 'M','m3';
+
+-- SELECT * FROM #TempKeys
+-- SELECT * FROM #TempKeyD ORDER BY KeyVal
+
+SELECT *
+FROM #TempKeys T
+FULL JOIN #TempKeyD D ON t.KeyVal = d.KeyVal;
+--######################################################### - List keyV values that have no representation in Detail table
+
+USE MyDatabase
+
+--SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
+-- SELECT * FROM #TempKeys
+--SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
+
+DROP TABLE if EXISTS #TempKeys
+SELECT *
+INTO #TempKeys   
+FROM dbo.Keys
+GO
+
+INSERT INTO #TempKeys SELECT 'E',21;
+INSERT INTO #TempKeys SELECT 'F',24;
+INSERT INTO #TempKeys SELECT 'G',3;
+INSERT INTO #TempKeys SELECT 'H',8;
+GO
+
+DROP TABLE if EXISTS #TempKeyD
+SELECT *
+INTO #TempKeyD   
+FROM dbo.KeyDetails
+
+-- SELECT * FROM #TempKeys
+-- SELECT * FROM #TempKeyD ORDER BY KeyVal
+
+-- Show all tables and corresponding values Joined on 'KeyVal'
+SELECT *
+FROM #TempKeys K
+LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal;
+
+-- segregate records based on KeyVal that are present in KeysTable but has no representation in KeyDetails table.
+SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
+INTO #T
+FROM #TempKeys K
+LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
+WHERE d.KeyVal Is NULL
+
+
+-- SELECT * FROM #T;
+
+-- Show list of KeyVal not represented in KeyDetails table
+SELECT k.KeyVal,k.KeyCount--, #T.sum_key_count, #T.average_count, #T.maximum, #T.minimum
+FROM #TempKeys K
+LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
+--JOIN  #T ON 1=1
+WHERE d.KeyVal Is NULL
+
+--########################################No JOIN
+DROP TABLE if EXISTS #T_no_JOIN
+SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
+--INTO #T_no_JOIN
+  FROM #TempKeys K
+ WHERE K.KeyVal NOT IN (
+    SELECT d.KeyVal
+      FROM #TempKeyD D
+);
+ -- SELECT * FROM #T_no_JOIN;
+
+SELECT K.KeyVal, K.KeyCount
+  FROM #TempKeys K
+ WHERE K.KeyVal NOT IN (
+    SELECT d.KeyVal
+      FROM #TempKeyD D
+);
+
