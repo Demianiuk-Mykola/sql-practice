@@ -5,7 +5,7 @@ USE MyDatabase
 
   DROP TABLE IF EXISTS dbo.Keys;
 GO
-CREATE TABLE dbo.Keys ( KeyVal CHAR (1) PRIMARY KEY NOT NULL,  KeyCount INT);
+CREATE TABLE dbo.Keys (KeyVal CHAR (1) PRIMARY KEY NOT NULL, KeyCount INT);
 
 INSERT INTO dbo.Keys (KeyVal, KeyCount)
 VALUES ('A', 30), ('B', 17), ('C', 13), ('D', 5);
@@ -88,7 +88,7 @@ VALUES
   C, Charlie, B, 15
   C, Charlie, C, 28    x
   
-  D, David,  Nothing   -- has to be in a result set by LEFT JOIN definition
+  D, David,  Nothing   -- adding to result set by LEFT JOIN definition
   D, David,  A: 20
   D, David,  B: 15
   D, David,  C: 28
@@ -97,14 +97,24 @@ VALUES
   
 
 */
+
+DROP TABLE IF EXISTS #x1; CREATE TABLE #x1 (t_Id int,);
+DROP TABLE IF EXISTS #y2; CREATE TABLE #y2 (t_Id INT);
+INSERT INTO #x1 VALUES (Null),( 1), (2) 
+INSERT INTO #y2 VALUES (20),(15), (28);
+SELECT x.*,'|||', y.* FROM #x1 x LEFT JOIN #y2 y ON 1 = 1 ORDER BY x.t_Id, y.t_Id;
+
 DROP TABLE IF EXISTS #t1; CREATE TABLE #t1 (t_Id VARCHAR(2), t_Name VARCHAR(20));
 DROP TABLE IF EXISTS #t2; CREATE TABLE #t2 (t_Id VARCHAR(2), t_Age INT);
 INSERT INTO #t1 VALUES ('A', 'Alex'),( 'B', 'Bob'), ('C', 'Charlie'), ('D', 'David');
 INSERT INTO #t2 VALUES ('A', 20),( 'B', 15), ('C', 28);
 GO
 
-SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON 1=1 OR y.t_Id IS NULL ORDER BY x.t_Id, y.t_Id;
-SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON x.t_Id = y.t_Id ORDER BY x.t_Id, y.t_Id;
+
+SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON 1 = 1 ORDER BY x.t_Id, y.t_Id;
+SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON x.t_Id = y.t_Id where y.t_Id IS NULL ORDER BY x.t_Id, y.t_Id;
+
+SELECT * FROM #t1 x Cross JOIN #t2; 
 
 
 SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
@@ -180,13 +190,6 @@ SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
 
 
 SELECT *
-INTO #TempKeys   
-FROM dbo.Keys
-
-INSERT INTO #TempKeys SELECT 'E',21;
-INSERT INTO #TempKeys SELECT 'F',24;
-
-SELECT *
 INTO #TempKeyD   
 FROM dbo.KeyDetails
 
@@ -203,13 +206,14 @@ INSERT INTO #TempKeyD SELECT 'M','m3';
 SELECT *
 FROM #TempKeys T
 FULL JOIN #TempKeyD D ON t.KeyVal = d.KeyVal;
---######################################################### - List keyV values that have no representation in Detail table
+--######################################################### -- Find list of keyV values that have no representation in Detail table,
+                                                            -- Count them, calc avr, min, max
 
 USE MyDatabase
 
---SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
+-- SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
 -- SELECT * FROM #TempKeys
---SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
+-- SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
 
 DROP TABLE if EXISTS #TempKeys
 SELECT *
@@ -233,41 +237,60 @@ FROM dbo.KeyDetails
 
 -- Show all tables and corresponding values Joined on 'KeyVal'
 SELECT *
-FROM #TempKeys K
-LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal;
+  FROM #TempKeys K
+  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal;
 
--- segregate records based on KeyVal that are present in KeysTable but has no representation in KeyDetails table.
+-- segregate records/calc counts(sum)/avr/min/max based on KeyVal that are present in KeysTable but has no representation in KeyDetails table.
+  DROP table if exists #T;   -- select * from #T
 SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
-INTO #T
-FROM #TempKeys K
-LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
-WHERE d.KeyVal Is NULL
+  INTO #T
+  FROM #TempKeys K
+  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
+ WHERE d.KeyVal Is NULL
+
+
 
 
 -- SELECT * FROM #T;
 
 -- Show list of KeyVal not represented in KeyDetails table
-SELECT k.KeyVal,k.KeyCount--, #T.sum_key_count, #T.average_count, #T.maximum, #T.minimum
+SELECT k.KeyVal,k.KeyCount, #T.sum_key_count, #T.average_count, #T.maximum, #T.minimum
 FROM #TempKeys K
 LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
---JOIN  #T ON 1=1
+JOIN  #T ON 1=1
 WHERE d.KeyVal Is NULL
 
+
+  DROP table if exists #lst;   -- select * from #lst;             -- WITH JOIN !!!       Two ways (Left JOIN/not in) to get the same RS
+SELECT k.KeyVal, k.KeyCount
+  INTO #lst
+  FROM #TempKeys K
+  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal                    -- WITH JOIN !!!
+ WHERE d.KeyVal Is NULL                                           -- WITH JOIN !!!
+
+  DROP table if exists #lst;   -- select * from #lst;             -- NO JOIN (USED "IN") !!!
+SELECT k.KeyVal, k.KeyCount
+  INTO #lst
+  FROM #TempKeys K
+ WHERE K.KeyVal NOT IN (SELECT DISTINCT KeyVal FROM #TempKeyD)  --  NO JOIN (USED "IN") !!! 
+
+
+select KeyVal, KeyCount, Total, avrKey, minKey, maxkey
+  from #lst
+  join (SELECT Total = SUM(KeyCount), avrKey = AVG(KeyCount), minKey = MIN(KeyCount), maxkey = MAX(KeyCount) from #lst ) T
+    on 1 = 1
+
 --########################################No JOIN
+
+
+
 DROP TABLE if EXISTS #T_no_JOIN
 SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
---INTO #T_no_JOIN
   FROM #TempKeys K
- WHERE K.KeyVal NOT IN (
-    SELECT d.KeyVal
-      FROM #TempKeyD D
-);
+ WHERE K.KeyVal NOT IN (SELECT DISTINCT d.KeyVal FROM #TempKeyD D);
  -- SELECT * FROM #T_no_JOIN;
 
 SELECT K.KeyVal, K.KeyCount
   FROM #TempKeys K
- WHERE K.KeyVal NOT IN (
-    SELECT d.KeyVal
-      FROM #TempKeyD D
-);
+ 
 
