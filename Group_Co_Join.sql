@@ -102,100 +102,64 @@ SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (L
 -- SELECT * FROM #TempKeys
 SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
 
-
-SELECT *
-INTO #TempKeyD   
-FROM dbo.KeyDetails
-
-INSERT INTO #TempKeyD SELECT 'L','l1';
-INSERT INTO #TempKeyD SELECT 'L','l2';
-INSERT INTO #TempKeyD SELECT 'L','l3';
-INSERT INTO #TempKeyD SELECT 'M','m1';
-INSERT INTO #TempKeyD SELECT 'M','m2';
-INSERT INTO #TempKeyD SELECT 'M','m3';
-
 -- SELECT * FROM #TempKeys
 -- SELECT * FROM #TempKeyD ORDER BY KeyVal
 
 SELECT *
-FROM #TempKeys T
-FULL JOIN #TempKeyD D ON t.KeyVal = d.KeyVal;
+FROM dbo.Keys K
+FULL JOIN dbo.KeyDetails D ON k.KeyVal = d.KeyVal;
 --######################################################### -- Find list of keyV values that have no representation in Detail table,
                                                             -- Count them, calc avr, min, max
 
 USE MyDatabase
 
--- SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
--- SELECT * FROM #TempKeys
--- SELECT * FROM dbo.KeyDetails D -- 2. Retrieving all records from KeyDetails
-
-DROP TABLE if EXISTS #TempKeys
-SELECT *
-INTO #TempKeys   
-FROM dbo.Keys
-GO
-
-INSERT INTO #TempKeys SELECT 'E',21;
-INSERT INTO #TempKeys SELECT 'F',24;
-INSERT INTO #TempKeys SELECT 'G',3;
-INSERT INTO #TempKeys SELECT 'H',8;
-GO
-
-DROP TABLE if EXISTS #TempKeyD
-SELECT *
-INTO #TempKeyD   
-FROM dbo.KeyDetails
-
--- SELECT * FROM #TempKeys
--- SELECT * FROM #TempKeyD ORDER BY KeyVal
+-- SELECT * FROM dbo.Keys;
+-- SELECT * FROM dbo.KeyDetails ORDER BY KeyVal
 
 -- Show all tables and corresponding values Joined on 'KeyVal'
 SELECT *
-  FROM #TempKeys K
-  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal;
+  FROM dbo.Keys K
+  LEFT JOIN dbo.KeyDetails D ON k.KeyVal = d.KeyVal;
 
 -- segregate records/calc counts(sum)/avr/min/max based on KeyVal that are present in KeysTable but has no representation in KeyDetails table.
   DROP table if exists #T;   -- select * from #T
 SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
   INTO #T
-  FROM #TempKeys K
-  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
+  FROM dbo.Keys K
+  LEFT JOIN dbo.KeyDetails D ON k.KeyVal = d.KeyVal
  WHERE d.KeyVal Is NULL
 
 
 
-
--- SELECT * FROM #T;
-
 -- Show list of KeyVal not represented in KeyDetails table
 SELECT k.KeyVal,k.KeyCount, #T.sum_key_count, #T.average_count, #T.maximum, #T.minimum
-FROM #TempKeys K
-LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal
+FROM dbo.Keys K
+LEFT JOIN dbo.KeyDetails D ON k.KeyVal = d.KeyVal
 JOIN  #T ON 1=1
 WHERE d.KeyVal Is NULL
 
-
+-- Two ways (Left JOIN/not in) to get the same RS
   DROP table if exists #lst;   -- select * from #lst;             -- WITH JOIN !!!       Two ways (Left JOIN/not in) to get the same RS
 SELECT k.KeyVal, k.KeyCount
   INTO #lst
-  FROM #TempKeys K
-  LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal                    -- WITH JOIN !!!
+  FROM dbo.Keys K
+  LEFT JOIN dbo.KeyDetails D ON k.KeyVal = d.KeyVal                    -- WITH JOIN !!!
  WHERE d.KeyVal Is NULL                                           -- WITH JOIN !!!
 
-
-select KeyVal, KeyCount, Total, avrKey, minKey, maxkey
+  --list only records from dbo.Keys where is no KeyDetails -> (NULL)
+  DROP table if exists #lst;   -- select * from #lst;             -- NO JOIN (USED "IN") !!!
+SELECT k.KeyVal, k.KeyCount
+  INTO #lst
+  FROM dbo.Keys K
+ WHERE K.KeyVal NOT IN (SELECT DISTINCT KeyVal FROM dbo.KeyDetails);  --  NO JOIN (USED "IN") !!!
+ 
+ -- Result set built by using JOIN on 2 tables (#lst(Keys) and calculated table(KeyDetails))
+ select KeyVal, KeyCount, Total, avrKey, minKey, maxkey
   from #lst
   join (SELECT Total = SUM(KeyCount), avrKey = AVG(KeyCount), minKey = MIN(KeyCount), maxkey = MAX(KeyCount) from #lst ) T
     on 1 = 1
 
-
-  DROP table if exists #lst;   -- select * from #lst;             -- NO JOIN (USED "IN") !!!
-SELECT k.KeyVal, k.KeyCount
-  INTO #lst
-  FROM #TempKeys K
- WHERE K.KeyVal NOT IN (SELECT DISTINCT KeyVal FROM #TempKeyD)  --  NO JOIN (USED "IN") !!! 
-
--- Attempt to combine results from table KeyValues and KeyDetails WITHOUT JOIN, but by using variables
+-- Attempt to combine results from table KeyValues and KeyDetails WITHOUT JOIN, but by using variables 
 DECLARE @SUM INT;
     SET @SUM = (SELECT SUM(KeyCount) from #lst);
 DECLARE @AVG INT; 
@@ -208,11 +172,8 @@ DECLARE @MAX INT;
  select KeyVal, KeyCount, Total = @SUM, avrKey = @AVG, minKey = @MIN, maxkey = @MAX
    from #lst
 
-
-
-
 -- one line is produced by inner select
 -- this method used in many other languages
-
+--#######################################################################################################
  
 
