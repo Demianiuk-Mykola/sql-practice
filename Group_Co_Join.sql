@@ -1,8 +1,8 @@
--- Join / Group BY / aggregate functions /
 
+--####################################### Join / Group BY / aggregate functions /
 
 USE MyDatabase
-
+------------------------------------
   DROP TABLE IF EXISTS dbo.Keys;
 GO
 CREATE TABLE dbo.Keys (KeyVal CHAR (1) PRIMARY KEY NOT NULL, KeyCount INT);
@@ -10,13 +10,14 @@ CREATE TABLE dbo.Keys (KeyVal CHAR (1) PRIMARY KEY NOT NULL, KeyCount INT);
 INSERT INTO dbo.Keys (KeyVal, KeyCount)
 VALUES ('A', 30), ('B', 17), ('C', 13), ('D', 5);
 ------------------------------------
-
   DROP TABLE IF EXISTS dbo.KeyDetails;         -- SELECT * FROM dbo.KeyDetails  ORDER BY KeyVal
 GO
 CREATE TABLE dbo.KeyDetails (
     KeyVal CHAR (1) NOT NULL,
     KeyD VARCHAR (99) NULL
-);                                             -- Truncate table dbo.KeyDetails
+);
+-- Truncate table dbo.KeyDetails
+GO
 INSERT INTO dbo.KeyDetails(KeyVal, KeyD)
 VALUES
 ('z', 'aaaa'),
@@ -24,97 +25,10 @@ VALUES
 ('B', 'aa'), ('B', 'dd'), ('B', 'ff'), ('B', Null),
 ('C', 'gg'), ('C', 'hh'), ('C', 'jj'),
 ('D', 'kk'), ('D', 'll'), ('D', 'mm'),  ('D', 'rr'), ('D', 'pp') , ('D', 'rr');
-
--------------------------------------------
-/*  Explanation of Cartesian and Join difference: Join is a Cartesian Product where after 'ON' condition is True (Logical meaning)
-  Table 1: 1 field: A, B, C
-  Table 2: 1 field: 1, 2, 3
-  Cartesian product: A1,A2,A3, B1,B2,B3, C1,C2,C3
- --------------------------------------------------
-  Table 1: 2 fields A: a, B: b, C: c
-  Table 2: 1 field 1, 2, 3
-  A, a, 1
-  A, a, 2
-  A, a, 3
-  B, b, 1
-  B, b, 2
-  B, b, 3
-  C, c, 1
-  C, c, 2
-  C, c, 3  -- Cartesian product will create 9 records, it does not matter how many fields in each table!!!
-
-
-  Table 1: 2 fields A: Alex, B: Bob, C: Charlie
-  Table 2: 2 fields A: 20,   B: 15,  C: 28
-  Task: Print Name and Age for each person
-  1. Build Cartesian Product:
-  Table 1,  Table 2
-  A, Alex,  A, 20      X
-  A, Alex,  B, 15
-  A, Alex,  C, 28
-
-  B, Bob,   A, 20
-  B, Bob,   B, 15      X
-  B, Bob,   C, 28
-
-  C, Charlie, A, 20
-  C, Charlie, B, 15
-  C, Charlie, C, 28    X
-
-  2. Find records where first field from 1st Table = 1st field from 2nd table
-    A, Alex,    A, 20      X
-    B, Bob,     B, 15      X
-    C, Charlie, C, 28      X
-
- --------------------------------------------------
- --BUILD LEFT JOIN MANUALY
-  Table 1: 1 field: A, B, C, D
-  Table 2: 1 field: 1, 2, 3
-  Cartesian PRoduct; A1,A2,A3,B1,B2,B3,C1,C2,C3,D1,D2,D3;
-
-  Table 1: 2 fields A: Alex, B: Bob, C: Charlie, D: David
-  Table 2: 2 fields A: 20,   B: 15,  C: 28
-  Cartesian Product: 
-  Table 1,  Table 2
-  A, Alex,  A, 20  x    
-  A, Alex,  B, 15
-  A, Alex,  C, 28
-
-  B, Bob,   A, 20
-  B, Bob,   B, 15   x   
-  B, Bob,   C, 28
-
-  C, Charlie, A, 20
-  C, Charlie, B, 15
-  C, Charlie, C, 28    x
-  
-  D, David,  Nothing   -- adding to result set by LEFT JOIN definition
-  D, David,  A: 20
-  D, David,  B: 15
-  D, David,  C: 28
-  Building LEFT JOIN manualy -> 'ON' Table1.Field1 = Table2.Field1
-
-  
-
-*/
-
-DROP TABLE IF EXISTS #x1; CREATE TABLE #x1 (t_Id int,);
-DROP TABLE IF EXISTS #y2; CREATE TABLE #y2 (t_Id INT);
-INSERT INTO #x1 VALUES (Null),( 1), (2) 
-INSERT INTO #y2 VALUES (20),(15), (28);
-SELECT x.*,'|||', y.* FROM #x1 x LEFT JOIN #y2 y ON 1 = 1 ORDER BY x.t_Id, y.t_Id;
-
-DROP TABLE IF EXISTS #t1; CREATE TABLE #t1 (t_Id VARCHAR(2), t_Name VARCHAR(20));
-DROP TABLE IF EXISTS #t2; CREATE TABLE #t2 (t_Id VARCHAR(2), t_Age INT);
-INSERT INTO #t1 VALUES ('A', 'Alex'),( 'B', 'Bob'), ('C', 'Charlie'), ('D', 'David');
-INSERT INTO #t2 VALUES ('A', 20),( 'B', 15), ('C', 28);
 GO
+------------------------------------
 
 
-SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON 1 = 1 ORDER BY x.t_Id, y.t_Id;
-SELECT x.*,'|||', y.* FROM #t1 x LEFT JOIN #t2 y ON x.t_Id = y.t_Id where y.t_Id IS NULL ORDER BY x.t_Id, y.t_Id;
-
-SELECT * FROM #t1 x Cross JOIN #t2; 
 
 
 SELECT * FROM dbo.Keys K       -- 1. Retrieving all records from Keys         (Logical meaning: any type of loops in languages like python, java, c++)
@@ -268,29 +182,37 @@ SELECT k.KeyVal, k.KeyCount
   LEFT JOIN #TempKeyD D ON k.KeyVal = d.KeyVal                    -- WITH JOIN !!!
  WHERE d.KeyVal Is NULL                                           -- WITH JOIN !!!
 
-  DROP table if exists #lst;   -- select * from #lst;             -- NO JOIN (USED "IN") !!!
-SELECT k.KeyVal, k.KeyCount
-  INTO #lst
-  FROM #TempKeys K
- WHERE K.KeyVal NOT IN (SELECT DISTINCT KeyVal FROM #TempKeyD)  --  NO JOIN (USED "IN") !!! 
-
 
 select KeyVal, KeyCount, Total, avrKey, minKey, maxkey
   from #lst
   join (SELECT Total = SUM(KeyCount), avrKey = AVG(KeyCount), minKey = MIN(KeyCount), maxkey = MAX(KeyCount) from #lst ) T
     on 1 = 1
 
---########################################No JOIN
 
-
-
-DROP TABLE if EXISTS #T_no_JOIN
-SELECT SUM(k.KeyCount) AS sum_key_count, average_count = AVG(k.KeyCount), minimum = MIN(k.KeyCount), maximum = MAX(k.KeyCount)
+  DROP table if exists #lst;   -- select * from #lst;             -- NO JOIN (USED "IN") !!!
+SELECT k.KeyVal, k.KeyCount
+  INTO #lst
   FROM #TempKeys K
- WHERE K.KeyVal NOT IN (SELECT DISTINCT d.KeyVal FROM #TempKeyD D);
- -- SELECT * FROM #T_no_JOIN;
+ WHERE K.KeyVal NOT IN (SELECT DISTINCT KeyVal FROM #TempKeyD)  --  NO JOIN (USED "IN") !!! 
 
-SELECT K.KeyVal, K.KeyCount
-  FROM #TempKeys K
+-- Attempt to combine results from table KeyValues and KeyDetails WITHOUT JOIN, but by using variables
+DECLARE @SUM INT;
+    SET @SUM = (SELECT SUM(KeyCount) from #lst);
+DECLARE @AVG INT; 
+    SET @AVG = (SELECT AVG(KeyCount) from #lst); 
+DECLARE @MIN INT;
+    SET @MIN = (SELECT MIN(KeyCount) from #lst);
+DECLARE @MAX INT;
+    SET @MAX = (SELECT MAX(KeyCount) from #lst);
+
+ select KeyVal, KeyCount, Total = @SUM, avrKey = @AVG, minKey = @MIN, maxkey = @MAX
+   from #lst
+
+
+
+
+-- one line is produced by inner select
+-- this method used in many other languages
+
  
 
