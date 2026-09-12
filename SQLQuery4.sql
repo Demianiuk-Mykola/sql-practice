@@ -35,3 +35,4 @@ CREATE TABLE persons (
 );
 
 SELECT  * FROM dbo.persons;
+SELECT  * FROM dbo.persons;
