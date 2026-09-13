@@ -19,7 +19,7 @@ SELECT c.country, AVG(c.score)
  GROUP BY c.country
 
 SELECT *
-  FROM dbo.customers
+  FROM dbo.customers;
 
 SELECT c.country, '-|||-' AS '-|||-',AVG(score) AS avg_score
   FROM customers c
@@ -27,7 +27,7 @@ SELECT c.country, '-|||-' AS '-|||-',AVG(score) AS avg_score
  GROUP BY c.country
 HAVING AVG(score) > 430
 
---//////////////////////////////
+--//////////////////////////////#
 
 CREATE TABLE persons (
 	id INT NOT NULL,
