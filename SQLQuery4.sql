@@ -14,6 +14,9 @@ SELECT c.country, AVG(c.score)
   FROM dbo.customers C
  GROUP BY c.country
 
+SELECT c.country, AVG(c.score)
+  FROM dbo.customers C
+ GROUP BY c.country
 
 SELECT *
   FROM dbo.customers
@@ -33,6 +36,5 @@ CREATE TABLE persons (
 	phone VARCHAR(15) NOT NULL
 	CONSTRAINT pk_persons PRIMARY KEY (id)
 );
-
 SELECT  * FROM dbo.persons;
 SELECT  * FROM dbo.persons;

@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "D:\\Study\\SQL_files\\sql-practice\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Study\\SQL_files\\sql-practice\\SQLQuery80.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SQLQuery80.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Study\\SQL_files\\sql-practice\\SQLQuery100.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SQLQuery100.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Study\\SQL_files\\sql-practice\\Group_Co_Join.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Group_Co_Join.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,31 +14,23 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SQLQuery80.sql - DESKTOP-4I8R713\\SQLEXPRESS.MyDatabase (DESKTOP-4I8R713\\Niko-PC (81))",
-              "DocumentMoniker": "D:\\Study\\SQL_files\\sql-practice\\SQLQuery80.sql",
-              "RelativeDocumentMoniker": "SQLQuery80.sql",
-              "ToolTip": "D:\\Study\\SQL_files\\sql-practice\\SQLQuery80.sql - DESKTOP-4I8R713\\SQLEXPRESS.MyDatabase (DESKTOP-4I8R713\\Niko-PC (81))",
-              "RelativeToolTip": "SQLQuery80.sql - DESKTOP-4I8R713\\SQLEXPRESS.MyDatabase (DESKTOP-4I8R713\\Niko-PC (81))",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-02-05T20:18:48.629Z",
-              "EditorCaption": " - DESKTOP-4I8R713\\SQLEXPRESS.MyDatabase (DESKTOP-4I8R713\\Niko-PC (81))"
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "SQLQuery100.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (76))",
-              "DocumentMoniker": "D:\\Study\\SQL_files\\sql-practice\\SQLQuery100.sql",
-              "RelativeDocumentMoniker": "SQLQuery100.sql",
-              "ToolTip": "D:\\Study\\SQL_files\\sql-practice\\SQLQuery100.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (76))",
-              "RelativeToolTip": "SQLQuery100.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (76))",
+              "DocumentIndex": 0,
+              "Title": "Group_Co_Join.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (53))",
+              "DocumentMoniker": "D:\\Study\\SQL_files\\sql-practice\\Group_Co_Join.sql",
+              "RelativeDocumentMoniker": "Group_Co_Join.sql",
+              "ToolTip": "D:\\Study\\SQL_files\\sql-practice\\Group_Co_Join.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (53))",
+              "RelativeToolTip": "Group_Co_Join.sql - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (53))",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-02-05T20:18:32.74Z",
-              "EditorCaption": " - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (76))"
+              "WhenOpened": "2026-04-28T16:14:24.352Z",
+              "EditorCaption": " - DESKTOP-4I8R713\\SQLEXPRESS.master (DESKTOP-4I8R713\\Niko-PC (53))"
             }
           ]
         }
