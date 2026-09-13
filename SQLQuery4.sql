@@ -28,7 +28,7 @@ SELECT c.country, '-|||-' AS '-|||-',AVG(score) AS avg_score
 HAVING AVG(score) > 430
 
 --//////////////////////////////#
-
+DROP TABLE IF EXISTS dbo.persons;
 CREATE TABLE persons (
 	id INT NOT NULL,
 	person_name VARCHAR(20) NOT NULL,
@@ -36,5 +36,26 @@ CREATE TABLE persons (
 	phone VARCHAR(15) NOT NULL
 	CONSTRAINT pk_persons PRIMARY KEY (id)
 );
+
 SELECT  * FROM dbo.persons;
+
+ALTER TABLE dbo.persons
+  ADD email VARCHAR(50) NOT NULL;
+
 SELECT  * FROM dbo.persons;
+
+ALTER TABLE dbo.persons
+ DROP COLUMN phone;
+ 
+INSERT INTO dbo.persons 
+VALUES 
+	  --(1, 'Jane', '2/7/1999', 23424152134)
+	 (2, 'Alex', '7/22/1960', 20394850799)
+	, (3, 'Helen', '1/8/1990', 20093478500)
+	, (4, 'Desmond', '9/9/1989', 3475732134);
+
+INSERT dbo.persons (id, person_name, phone)
+VALUES (5, 'Ely', 03947509245);
+
+SELECT c.id, c.first_name
+  FROM dbo.customers c;
