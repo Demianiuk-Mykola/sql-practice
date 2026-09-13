@@ -46,7 +46,8 @@ SELECT  * FROM dbo.persons;
 
 ALTER TABLE dbo.persons
  DROP COLUMN phone;
- 
+
+-- 
 INSERT INTO dbo.persons 
 VALUES 
 	  --(1, 'Jane', '2/7/1999', 23424152134)
@@ -57,5 +58,45 @@ VALUES
 INSERT dbo.persons (id, person_name, phone)
 VALUES (5, 'Ely', 03947509245);
 
-SELECT c.id, c.first_name
+--Insert output of SELECT into NEW table.
+INSERT dbo.persons (id, person_name, phone)
+SELECT c.id, c.first_name, 'unknown'
   FROM dbo.customers c;
+
+UPDATE dbo.persons
+   SET person_name = 'George'
+ WHERE id = 3;
+
+/*SELECT person_name
+  FROM dbo.persons
+ WHERE id = 3;*/
+
+SELECT  * FROM dbo.persons;
+
+ UPDATE dbo.persons
+	SET birth_date = '2/4/2000', phone = 238047987
+  WHERE id = 4;
+
+
+
+ALTER TABLE dbo.persons
+ ADD score INT
+
+ALTER TABLE dbo.persons
+ DROP COLUMN occupation
+
+
+----------------------------------------------------
+UPDATE dbo.persons
+   SET score = 0
+ WHERE score IS NULL
+
+UPDATE dbo.persons
+   SET score = NULL
+ WHERE score = 0
+----------------------------------------------------
+
+
+
+SELECT * 
+  FROM dbo.persons
