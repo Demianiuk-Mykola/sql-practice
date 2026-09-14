@@ -100,3 +100,18 @@ UPDATE dbo.persons
 
 SELECT * 
   FROM dbo.persons
+
+CREATE TABLE #aaa (rid INT, rname VARCHAR(20));
+
+DECLARE @aaa TABLE (rid INT, rname VARCHAR(20)); 
+SELECT * FROM @aaa;
+
+DECLARE @a1 VARCHAR(20);
+SELECT @a1
+
+CREATE SCHEMA Nik;
+CREATE TABLE Nik.aaa (rid INT, rname VARCHAR(20));
+CREATE TABLE aaa (rid INT, rname VARCHAR(20));
+
+
+SELECT * FROM sys.schemas
