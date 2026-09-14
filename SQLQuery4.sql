@@ -113,5 +113,12 @@ CREATE SCHEMA Nik;
 CREATE TABLE Nik.aaa (rid INT, rname VARCHAR(20));
 CREATE TABLE aaa (rid INT, rname VARCHAR(20));
 
-
+DROP TABLE Nik.aaa
+DROP SCHEMA Nik;
 SELECT * FROM sys.schemas
+
+
+SELECT * FROM dbo.persons WHERE birth_date IS NULL;
+
+DELETE FROM dbo.persons
+WHERE birth_date IS NULL
