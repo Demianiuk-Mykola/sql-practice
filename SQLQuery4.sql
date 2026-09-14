@@ -103,18 +103,38 @@ SELECT *
 
 CREATE TABLE #aaa (rid INT, rname VARCHAR(20));
 
-DECLARE @aaa TABLE (rid INT, rname VARCHAR(20)); 
+
+
+-- in @a_0 we see real value (directly in memory), in @a_null we see refernce to memory where variable value will be assigned.
+DECLARE @a_0 VARCHAR(20) = 0, @a_null VARCHAR (20); 
+PRINT @a_0; PRINT ISNULL ( @a_null, 'my variable is NULL now');
+
+SET @a_null = 'aaa';
+PRINT 'What is value of my variable: ' + ISNULL ( @a_null, 'my variable is NULL now');
+
+DECLARE @aaa TABLE (rId INT, rName VARCHAR(20));
 SELECT * FROM @aaa;
+DECLARE @rId int, @rName VARCHAR (20);    
 
-DECLARE @a1 VARCHAR(20);
-SELECT @a1
+SELECT @rId = rId, @rName = rName FROM @aaa;
+PRINT ISNULL ( @rId, 'my variable is NULL now');
 
+DECLARE @rId int, @rName VARCHAR (20); 
+DECLARE @aaa TABLE (rId INT, rName VARCHAR(20))
+INSERt INTO @aaa SELECT 1,'first record';
+INSERt INTO @aaa SELECT 2,'second record';
+SELECT 'All Records', * FROM @aaa;
+SELECT Top 1 @rId = rId, @rName = rName FROM @aaa order by rID Asc ;  SELECT '1st record assigned/print out', @rId, @rName
+SELECT TOP 1 @rId = rId, @rName = rName FROM @aaa ORDER BY rId Desc;  SELECT '2nd record assigned/print out', @rId, @rName
+SELECT @rId = rId, @rName = rName FROM @aaa;                          SELECT 'Iterate all/print out last', @rId, @rName
+
+-- Schema creation and deletion (schema can be deleted when no tables are in)
 CREATE SCHEMA Nik;
 CREATE TABLE Nik.aaa (rid INT, rname VARCHAR(20));
 CREATE TABLE aaa (rid INT, rname VARCHAR(20));
-
 DROP TABLE Nik.aaa
 DROP SCHEMA Nik;
+
 SELECT * FROM sys.schemas
 
 
@@ -122,3 +142,16 @@ SELECT * FROM dbo.persons WHERE birth_date IS NULL;
 
 DELETE FROM dbo.persons
 WHERE birth_date IS NULL
+
+-- If I want to see all objects in my database (One object = one record), select records from "sys.all_objects".
+-- .
+SELECT * FROM sys.all_objects
+
+SELECT COUNT(1) FROM sys.all_objects
+
+SELECT [type],[type_desc], COUNT(1) 
+  FROM sys.all_objects
+ GROUP BY [type], [type_desc]
+
+
+SELECT (sqrt(101)-sqrt(99)), sqrt(101), sqrt(99)
