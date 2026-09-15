@@ -63,13 +63,19 @@ INSERT dbo.persons (id, person_name, phone)
 SELECT c.id, c.first_name, 'unknown'
   FROM dbo.customers c;
 
-UPDATE dbo.persons
+UPDATE dbo.persons 
    SET person_name = 'George'
  WHERE id = 3;
 
 /*SELECT person_name
   FROM dbo.persons
  WHERE id = 3;*/
+
+UPDATE A 
+   SET person_name = 'George'  -- SELECT person_name
+  from dbo.persons A
+--JOIN dbo.customers C on a.id = c.id      -- in this format, very easy to add joins
+ WHERE id = 3;
 
 SELECT  * FROM dbo.persons;
 
@@ -96,6 +102,8 @@ UPDATE dbo.persons
  WHERE score = 0
 ----------------------------------------------------
 
+DECLARE @a1 VARCHAR(20) = 0, @a2 VARCHAR (20);    Set @a1 = 'aaa'; Set @a2= 'bbb'  -- it is the same
+                                              Select @a1 = 'aaa', @a2= 'bbb'   --  as here
 --Variables, Objects, Values, Refernce
 CREATE TABLE #aaa (rid INT, rname VARCHAR(20));
 
