@@ -171,3 +171,13 @@ SELECT *
  SELECT *
   FROM customers
  WHERE first_name LIKE '_a__%'
+--------------------------------------------------
+SELECT * FROM dbo.customers;
+SELECT * FROM dbo.orders;
+
+SELECT c.id,c.first_name, c.country, o.sales
+  FROM dbo.customers C
+ INNER JOIN dbo.orders O
+    ON c.id = o.customer_id
+GROUP BY c.id,
+--INSERT INTO dbo.orders VALUES (1005, 2, '2021-09-01', 22)
