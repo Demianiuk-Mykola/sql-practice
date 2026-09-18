@@ -71,6 +71,8 @@ UPDATE dbo.persons
   FROM dbo.persons
  WHERE id = 3;*/
 
+UPDATE dbo.persons SET person_name = 'George'WHERE id = 3;
+
 UPDATE A 
    SET person_name = 'George'  -- SELECT person_name
   from dbo.persons A
@@ -175,9 +177,32 @@ SELECT *
 SELECT * FROM dbo.customers;
 SELECT * FROM dbo.orders;
 
-SELECT c.id,c.first_name, c.country, o.sales
+
+SELECT c.first_name, c.country, SUM(o.sales)
   FROM dbo.customers C
- INNER JOIN dbo.orders O
-    ON c.id = o.customer_id
-GROUP BY c.id,
+ INNER JOIN dbo.orders O ON
+ c.id = o.customer_id
+ GROUP BY c.first_name, c.country
 --INSERT INTO dbo.orders VALUES (1005, 2, '2021-09-01', 22)
+
+--LEFT
+SELECT c.first_name, c.country, o.order_id
+  FROM dbo.customers C
+ LEFT JOIN dbo.orders O ON
+ c.id = o.customer_id
+
+--RIGHT
+SELECT o.order_id, c.first_name, c.country 
+  FROM dbo.customers C
+ RIGHT JOIN dbo.orders O ON
+ c.id = o.customer_id
+
+-- Baraa tasks
+--Get all customers along with their orders,
+--including orders without without matching customers (LJ)
+SELECT * FROM dbo.customers;
+SELECT * FROM dbo.orders;
+
+SELECT c.first_name, o.order_id, o.sales
+  FROM dbo.customers C
+  FULL JOIN dbo.orders O ON o.customer_id = c.id
