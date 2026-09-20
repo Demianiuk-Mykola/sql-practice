@@ -54,7 +54,8 @@ Select * from #Lst
 
 
 ----------------------------------
--- USING DELETE/JOIN -> good for environment with a lot of records, where you have to exclude a lot of records
+-- USING DELETE/JOIN -> good for environment with a lot of records, find and exclude a lot of records. 
+-- Requires extra 1 step to create index in the exclude table to speed up DELETE
 --step1
 Drop table if exists #Deletable
 Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
@@ -67,6 +68,15 @@ DELETE L
     -- SELECT l.*
   FROM #Lst L
   JOIN #Deletable D ON l.Nm = d.lstNm -- much faster  way -> Join
+
+--VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+--works fast in small/mid size environment
+DELETE L 
+    -- SELECT l.*
+  FROM #Lst L
+  JOIN #ExclLst E ON l.Nm like '%' + e.Nm + '%'
+SELECT * FROM #Lst
+--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 --step3
 Select * from #Lst
@@ -95,6 +105,9 @@ UPDATE L
   Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
   SELECT * FROM #Lst
   WHERE Nm != 'bla'
+---------------------------------------
+
+
 ---------------------------------------
 
 Select * from #Lst
