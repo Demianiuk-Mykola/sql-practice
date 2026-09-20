@@ -24,7 +24,7 @@ Select * into #ExclLst
 
 Drop table if exists #Lst       -- Select * from #Lst
 Select * into #Lst
-    from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb') ) as A (Nm)
+    from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb'),('AMOUNT'),('AMOUNT') ) as A (Nm)
 
 Select l.*, '|||' , e.*
     from #Lst L
@@ -37,6 +37,7 @@ Select l.*, '|||', e.*
     from #Lst L
     Join #ExclLst E on l.Nm not like '%' + e.Nm + '%'
 ------------------------------
+--USING DELETE/IN
 --step1
 Drop table if exists #Deletable
 Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
@@ -53,7 +54,7 @@ Select * from #Lst
 
 
 ----------------------------------
-
+-- USING DELETE/JOIN -> good for environment with a lot of records, where you have to exclude a lot of records
 --step1
 Drop table if exists #Deletable
 Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
@@ -73,5 +74,53 @@ Select * from #Deletable
 
 
 ----------------------------------
+--USING Excluding FULL JOIN
+Drop table if exists #Final
+Select l.Nm AS lstNm INTO #Final -- SELECt * FROM #Final
+    from #Lst L
+    Full Join #ExclLst E on l.Nm  like '%' + e.Nm + '%'
+    where e.Nm IS NULL
+
+---------------------------------------
+--USING JOIN
+Drop table if exists #Deletable
+Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
+    from #Lst L
+    Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
+
+UPDATE L
+   SET l.nm = 'bla'
+--SELECT l.Nm
+  FROM #Lst L
+  Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
+  SELECT * FROM #Lst
+  WHERE Nm != 'bla'
+---------------------------------------
+
 Select * from #Lst
     where Nm not like '%AMOUNT%' and Nm not like '%COUNT%'
+
+
+-----------------------------------------------------------------------------
+--TEST AREA
+-----------------------------------------------------------------------------
+
+
+Drop table if exists #Test
+Select l.Nm AS lstNm  INTO #Test -- SELECt * FROM #Test Select * from #Lst
+    from #Lst L
+    Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
+    --where e.Nm IS NULL
+
+DECLARE @x int
+SELECT @x = COUNT(Nm) FROM #Lst
+SELECT @x
+
+
+
+ --COUNT(Nm) INTO ;
+SELECT COUNT(lstNm) FROM #Test;
+SELECT TOP ((SELECT COUNT(Nm) FROM #Lst) - (SELECT COUNT(lstNm) FROM #Test) ) FROM #Lst;
+
+SELECT l.Nm, '|||', t.lstNm FROM #Lst L
+JOIN #Test T ON l.Nm = t.lstNm
