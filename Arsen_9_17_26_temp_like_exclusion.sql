@@ -14,7 +14,7 @@ Select * into #Excl
 create table #Excl (eNm varchar (999))
 Insert into #Excl values ('%AMOUNT%'), ('%COUNT%'), ('%DATE%'), ('%SOCIAL%')
 
--- 3rd way to add records. It places result set returned by SELECT into #temp_tbl
+--#3rd way to add records. It places result set returned by SELECT into #temp_tbl
 Drop table if exists #Excl
 Select exclNm = '%AMOUNT%' -- SELECT * FROM #Excl
 INTO #Excl 
@@ -35,7 +35,7 @@ Drop table if exists #Lst       -- Select * from #Lst
 Select * into #Lst
     from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb'),('AMOUNT'),('AMOUNT') ) as A (Nm)
 
--- ANOTHER METHOD (4th way) of putting string values in table usng SPLIT_STRING
+-- ANOTHER METHOD (#4th way) of putting string values in table usng SPLIT_STRING
 DECLARE @strList VARCHAR(99) = 'aaaAMOUNTaaa,AMOUNTkkk,sssAMOUNTsss,bbbCOUNTbbb,aaa,bbb,AMOUNT,AMOUNT'
 SELECT value INTO #words
 FROM STRING_SPLIT(@strList, ',');
@@ -63,7 +63,7 @@ Select l.*, '|||', e.*
 --##############################
 --Comparing records in main table with records in lookup table (if match-> delete)
 --##############################
---USING DELETE/IN
+--USING DELETE/IN  - good for med-small record sets
 --step1
 Drop table if exists #Deletable
 Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
@@ -75,8 +75,6 @@ WHERE Nm IN (
     SELECT D.lstNm
     FROM #Deletable AS D
 );
-
-
 ----------------------------------
 -- USING DELETE/JOIN -> good for environment with a lot of records, find and exclude a lot of records. 
 -- Requires extra 1 step to create index in the exclude table to speed up DELETE
