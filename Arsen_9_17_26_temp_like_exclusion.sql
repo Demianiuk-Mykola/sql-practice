@@ -26,6 +26,12 @@ Drop table if exists #Lst       -- Select * from #Lst
 Select * into #Lst
     from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb'),('AMOUNT'),('AMOUNT') ) as A (Nm)
 
+-- ANOTHER METHOD of putting string values in table usng SPLIT_STRING
+DECLARE @strList VARCHAR(99) = 'aaaAMOUNTaaa,AMOUNTkkk,sssAMOUNTsss,bbbCOUNTbbb,aaa,bbb,AMOUNT,AMOUNT'
+SELECT value INTO #words
+FROM STRING_SPLIT(@strList, ',');
+SELECT * FROM #words
+
 Select l.*, '|||' , e.*
     from #Lst L
     Join #ExclLst E on 1 = 1
@@ -113,7 +119,8 @@ UPDATE L
 Select * from #Lst
     where Nm not like '%AMOUNT%' and Nm not like '%COUNT%'
 
-
+SELECT value 
+FROM STRING_SPLIT('apple,banana,cherry', ',');
 -----------------------------------------------------------------------------
 --TEST AREA
 -----------------------------------------------------------------------------
