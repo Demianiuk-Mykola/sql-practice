@@ -106,6 +106,7 @@ UPDATE dbo.persons
 
 DECLARE @a1 VARCHAR(20) = 0, @a2 VARCHAR (20);    Set @a1 = 'aaa'; Set @a2= 'bbb'  -- it is the same
                                               Select @a1 = 'aaa', @a2= 'bbb'   --  as here
+DECLARE @b int = NULL;
 --Variables, Objects, Values, Refernce
 CREATE TABLE #aaa (rid INT, rname VARCHAR(20));
 

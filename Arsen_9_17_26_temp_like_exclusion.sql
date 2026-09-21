@@ -109,6 +109,7 @@ UPDATE L
 --SELECT l.Nm
   FROM #Lst L
   Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
+
   SELECT * FROM #Lst
   WHERE Nm != 'bla'
 ---------------------------------------
