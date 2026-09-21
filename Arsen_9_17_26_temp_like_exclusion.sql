@@ -41,17 +41,28 @@ SELECT value INTO #words
 FROM STRING_SPLIT(@strList, ',');
 SELECT * FROM #words
 
+--real Cartesian prod 8 x 2 = 16 rows
 Select l.*, '|||' , e.*
     from #Lst L
     Join #ExclLst E on 1 = 1
 
+--FULL JOIN
+--Matching rows from L and E
+--Unmatched rows from L, with NULL values for E
+--Unmatched rows from E, with NULL values for L
+SELECT l.*, '|||' , e.*
+from #Lst L
+    FULL Join #ExclLst E on e.Nm = l.Nm
 
 Select * from #Lst
 Select * from #ExclLst
 Select l.*, '|||', e.*
     from #Lst L
-    Join #ExclLst E on l.Nm not like '%' + e.Nm + '%'
-------------------------------
+    Join #ExclLst E on l.Nm  like '%' + e.Nm + '%'
+
+--##############################
+--Comparing records in main table with records in lookup table (if match-> delete)
+--##############################
 --USING DELETE/IN
 --step1
 Drop table if exists #Deletable
@@ -59,13 +70,11 @@ Select l.Nm AS lstNm, e.Nm AS exclNm INTO #Deletable -- SELECt * FROM #Deletable
     from #Lst L
     Join #ExclLst E on l.Nm like '%' + e.Nm + '%'
 --step2
-DELETE FROM #Lst
+DELETE FROM #Lst    --Select * from #Lst
 WHERE Nm IN (
     SELECT D.lstNm
     FROM #Deletable AS D
 );
---step3
-Select * from #Lst
 
 
 ----------------------------------
