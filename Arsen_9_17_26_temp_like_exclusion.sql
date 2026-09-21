@@ -1,19 +1,28 @@
 USE MyDatabase
 
-Drop table if exists #ExclLst       -- Select * from #ExclLst
-Select * into #ExclLst
+--There are many ways to add 'values' to (temporary/database) tables.
+--#1st way to add records
+Drop table if exists #Excl      -- Select * from #Excl
+Select * into #Excl
     from ( values ('%AMOUNT%'), ('%COUNT%'), ('%DATE%'), ('%SOCIAL%') ) as A (exclNm)
     Select a.name, c.*
         from tempdb.sys.all_columns c
         join tempdb.sys.all_objects A on c.object_id = a.object_id
         where a.name like '%ExclLst%'
 
+--#2nd way to add records
 create table #Excl (eNm varchar (999))
 Insert into #Excl values ('%AMOUNT%'), ('%COUNT%'), ('%DATE%'), ('%SOCIAL%')
 
-Select exclNm = '%AMOUNT%' union
-Select '%COUNT%' union
-Select '%DATE%' union
+-- 3rd way to add records. It places result set returned by SELECT into #temp_tbl
+Drop table if exists #Excl
+Select exclNm = '%AMOUNT%' -- SELECT * FROM #Excl
+INTO #Excl 
+union
+Select '%COUNT%' 
+union
+Select '%DATE%' 
+union
 Select '%SOCIAL%'
 
 --------------------------------------------
@@ -26,7 +35,7 @@ Drop table if exists #Lst       -- Select * from #Lst
 Select * into #Lst
     from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb'),('AMOUNT'),('AMOUNT') ) as A (Nm)
 
--- ANOTHER METHOD of putting string values in table usng SPLIT_STRING
+-- ANOTHER METHOD (4th way) of putting string values in table usng SPLIT_STRING
 DECLARE @strList VARCHAR(99) = 'aaaAMOUNTaaa,AMOUNTkkk,sssAMOUNTsss,bbbCOUNTbbb,aaa,bbb,AMOUNT,AMOUNT'
 SELECT value INTO #words
 FROM STRING_SPLIT(@strList, ',');
