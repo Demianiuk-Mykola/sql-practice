@@ -125,7 +125,7 @@ SELECT @rId = rId, @rName = rName FROM @aaa;
 PRINT ISNULL ( @rId, 'my variable is NULL now');
 
 DECLARE @rId int, @rName VARCHAR (20); 
-DECLARE @aaa TABLE (rId INT, rName VARCHAR(20))
+DECLARE @aaa TABLE (rId INT, rName VARCHAR(20));
 INSERT INTO @aaa SELECT 1,'first record';
 INSERT INTO @aaa SELECT 2,'second record';
 SELECT 'All Records', * FROM @aaa;
@@ -207,3 +207,6 @@ SELECT * FROM dbo.orders;
 SELECT c.first_name, o.order_id, o.sales
   FROM dbo.customers C
   FULL JOIN dbo.orders O ON o.customer_id = c.id
+
+  --=NEW MATERIAL=--
+-------------------------------------------------------

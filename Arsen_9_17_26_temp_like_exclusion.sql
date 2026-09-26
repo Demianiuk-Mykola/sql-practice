@@ -35,6 +35,16 @@ Drop table if exists #Lst       -- Select * from #Lst
 Select * into #Lst
     from ( values ('aaaAMOUNTaaa'), ('AMOUNTkkk'),('sssAMOUNTsss'), ('bbbCOUNTbbb'), ('aaa'), ('bbb'),('AMOUNT'),('AMOUNT') ) as A (Nm)
 
+--ANTI JOIN
+SELECT * FROM #Lst L
+LEFT JOIN #ExclLst E ON l.Nm LIKE '%' + e.Nm + '%'
+WHERE e.Nm IS NULL
+
+SELECT * FROM #Lst L
+CROSS JOIN #ExclLst E
+
+
+
 -- ANOTHER METHOD (#4th way) of putting string values in table usng SPLIT_STRING
 DECLARE @strList VARCHAR(99) = 'aaaAMOUNTaaa,AMOUNTkkk,sssAMOUNTsss,bbbCOUNTbbb,aaa,bbb,AMOUNT,AMOUNT'
 SELECT value INTO #words
